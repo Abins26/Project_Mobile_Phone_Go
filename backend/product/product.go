@@ -3,11 +3,11 @@ package product
 import (
 	"encoding/json"
 	"net/http"
-	"strconv"
+	// "strconv"
 	"database/sql"
 	"mobiles/connect"
 
-	"github.com/gorilla/mux"
+	// "github.com/gorilla/mux"
 )
 
 type Product struct {
@@ -164,79 +164,80 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 
 
 // Edit an existing product
-func EditProduct(w http.ResponseWriter, r *http.Request) {
-	// Parse product ID from URL path
-	params := mux.Vars(r)
-	id, err := strconv.Atoi(params["id"])
-	if err != nil {
-		http.Error(w, "Invalid product ID", http.StatusBadRequest)
-		return
-	}
+// func EditProduct(w http.ResponseWriter, r *http.Request) {
+// 	// Parse product ID from URL path
+// 	params := mux.Vars(r)
+// 	id, err := strconv.Atoi(params["id"])
+// 	if err != nil {
+// 		http.Error(w, "Invalid product ID", http.StatusBadRequest)
+// 		return
+// 	}
 
-	// Parse request body to get updated product data
-	var product Product
-	err = json.NewDecoder(r.Body).Decode(&product)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
+// 	// Parse request body to get updated product data
+// 	var product Product
+// 	err = json.NewDecoder(r.Body).Decode(&product)
+// 	if err != nil {
+// 		http.Error(w, err.Error(), http.StatusBadRequest)
+// 		return
+// 	}
 
-	// Update product in database
-	db:=connect.InitDB()
-	_, err = db.Exec("UPDATE products SET name=?, image=?, price=?, specs=? WHERE id=?",
-		product.Name, product.Image, product.Price, product.Specs, id)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+// 	// Update product in database
+// 	db:=connect.InitDB()
+// 	_, err = db.Exec("UPDATE products SET name=?, image=?, price=?, specs=? WHERE id=?",
+// 		product.Name, product.Image, product.Price, product.Specs, id)
+// 	if err != nil {
+// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+// 		return
+// 	}
 
-	// Return success response
-	json.NewEncoder(w).Encode(map[string]interface{}{"message": "Product updated successfully"})
-}
+// 	// Return success response
+// 	json.NewEncoder(w).Encode(map[string]interface{}{"message": "Product updated successfully"})
+// }
 
 
 // Delete a product
-func DeleteProduct(w http.ResponseWriter, r *http.Request) {
-	// Parse product ID from URL path
-	params := mux.Vars(r)
-	id, err := strconv.Atoi(params["id"])
-	if err != nil {
-		http.Error(w, "Invalid product ID", http.StatusBadRequest)
-		return
-	}
 
-	// Delete product from database
-	db:=connect.InitDB()
-	_, err = db.Exec("DELETE FROM products WHERE id=?", id)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+// func DeleteProduct(w http.ResponseWriter, r *http.Request) {
+// 	// Parse product ID from URL path
+// 	params := mux.Vars(r)
+// 	id, err := strconv.Atoi(params["id"])
+// 	if err != nil {
+// 		http.Error(w, "Invalid product ID", http.StatusBadRequest)
+// 		return
+// 	}
+//
+ 	// Delete product from database
+// 	db:=connect.InitDB()
+// 	_, err = db.Exec("DELETE FROM products WHERE id=?", id)
+// 	if err != nil {
+// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+// 		return
+// 	}
 
-	// Return success response
-	json.NewEncoder(w).Encode(map[string]interface{}{"message": "Product deleted successfully"})
-}
+// 	// Return success response
+// 	json.NewEncoder(w).Encode(map[string]interface{}{"message": "Product deleted successfully"})
+// }
 
 
 // View details of a specific product
-func ViewProduct(w http.ResponseWriter, r *http.Request) {
-	// Parse product ID from URL path
-	params := mux.Vars(r)
-	id, err := strconv.Atoi(params["id"])
-	if err != nil {
-		http.Error(w, "Invalid product ID", http.StatusBadRequest)
-		return
-	}
+// func ViewProduct(w http.ResponseWriter, r *http.Request) {
+// 	// Parse product ID from URL path
+// 	params := mux.Vars(r)
+// 	id, err := strconv.Atoi(params["id"])
+// 	if err != nil {
+// 		http.Error(w, "Invalid product ID", http.StatusBadRequest)
+// 		return
+// 	}
 
-	// Fetch product details from database
-	var product Product
-	db:=connect.InitDB()
-	err = db.QueryRow("SELECT * FROM products WHERE id=?", id).Scan(&product.ID, &product.Name, &product.Image, &product.Price, &product.Specs)
-	if err != nil {
-		http.Error(w, "Product not found", http.StatusNotFound)
-		return
-	}
+// 	// Fetch product details from database
+// 	var product Product
+// 	db:=connect.InitDB()
+// 	err = db.QueryRow("SELECT * FROM products WHERE id=?", id).Scan(&product.ID, &product.Name, &product.Image, &product.Price, &product.Specs)
+// 	if err != nil {
+// 		http.Error(w, "Product not found", http.StatusNotFound)
+// 		return
+// 	}
 
-	// Return product details as JSON response
-	json.NewEncoder(w).Encode(product)
-}
+// 	// Return product details as JSON response
+// 	json.NewEncoder(w).Encode(product)
+// }
