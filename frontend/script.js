@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const username = usernameInput.value;
         const password = passwordInput.value;
 
-        // Example of sending login data to the server
         // Replace with your actual API endpoint
         fetch('http://localhost:8080/login', {
             method: 'POST',

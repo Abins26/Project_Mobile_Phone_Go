@@ -1,7 +1,6 @@
 package main
 
 import (
-	// "database/sql"
 	"fmt"
 	"log"
 	"mobiles/connect"
@@ -42,6 +41,7 @@ func main() {
 
 	r.HandleFunc("/api/products/edit/{id}", product.EditProduct).Methods("PUT")
 
+	
 	// Start server
 	fmt.Println("Server listening on port 8080...")
 	log.Fatal(http.ListenAndServe(":8080", corsHandler(r)))

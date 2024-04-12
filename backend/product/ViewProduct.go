@@ -12,17 +12,9 @@ import (
 )
 
 func ViewProduct(w http.ResponseWriter, r *http.Request) {
-	// w.Header().Set("Access-Control-Allow-Origin", "*")                                // Set allowed headers
-	// w.Header().Set("Access-Control-Allow-Headers", "Content-Type")                    // Set allowed methods
-	// w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS") // Parse product ID from URL path
-
+	
 	params := mux.Vars(r)
 	productid, err := strconv.Atoi(params["id"])
-
-	// query := r.URL.Query()
-	//productIdStr := r.URL.Query().Get("id")
-	//productid, err := strconv.Atoi(productIdStr)
-	// fmt.Println(productid)
 
 	if err != nil {
 		fmt.Println("error", err)

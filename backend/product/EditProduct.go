@@ -3,17 +3,20 @@ package product
 import (
 	"fmt"
 	"io"
+	"log"
 	"mobiles/connect"
 	"net/http"
 	"os"
+	"path"
 	"strconv"
 
 	"github.com/gorilla/mux"
 )
 
-
-
 func EditProduct(w http.ResponseWriter, r *http.Request) {
+	var imgUrl string
+	db := connect.InitDB()
+
 	vars := mux.Vars(r)
 	idStr := vars["id"]
 	id, err := strconv.Atoi(idStr)
@@ -27,7 +30,7 @@ func EditProduct(w http.ResponseWriter, r *http.Request) {
 	specs := r.FormValue("specs")
 	priceStr := r.FormValue("price")
 	price, err := strconv.ParseFloat(priceStr, 64)
-	fmt.Println("price", err)
+	fmt.Println(err)
 
 	if err != nil {
 		http.Error(w, "Invalid price format", http.StatusBadRequest)
@@ -35,17 +38,32 @@ func EditProduct(w http.ResponseWriter, r *http.Request) {
 	}
 
 	file, handler, err := r.FormFile("image")
-	fmt.Println("file", err)
+	fmt.Println(err)
 
 	if err != nil {
 		http.Error(w, "Failed to get image file", http.StatusBadRequest)
 		return
 	}
 	defer file.Close()
+
+	err = db.QueryRow("select imagesName from products where id=?", id).Scan(&imgUrl)
+	if err != nil {
+		log.Print(err)
+	}
+	oldimageName := path.Base(imgUrl)
+
+	oldimagePath := "./uploads/" + oldimageName
+	err = os.Remove(oldimagePath)
+	if err != nil {
+		fmt.Println("failed to delete  error ", err)
+		http.Error(w, "Failed to delete image file", http.StatusInternalServerError)
+		return
+	}
+
 	imagename := handler.Filename
 	imagePath := "../uploads/" + handler.Filename
 	outputFile, err := os.Create(imagePath)
-	fmt.Println("img path", err)
+	fmt.Println(err)
 
 	if err != nil {
 		fmt.Println("error creating path", err)
@@ -55,7 +73,7 @@ func EditProduct(w http.ResponseWriter, r *http.Request) {
 	defer outputFile.Close()
 
 	_, err = io.Copy(outputFile, file)
-	fmt.Println("vars", err)
+	fmt.Println(err)
 
 	if err != nil {
 		http.Error(w, "Failed to write image file", http.StatusInternalServerError)
@@ -63,12 +81,9 @@ func EditProduct(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Set ID from URL parameter
-	db := connect.InitDB()
 
 	_, err = db.Exec("UPDATE products SET productname = ?, specs = ?, price = ?,imagesName = ? WHERE id = ?",
 		name, specs, price, imagename, id)
-	fmt.Println("vars", err)
-
 	if err != nil {
 		http.Error(w, "Failed to update mobile phone", http.StatusInternalServerError)
 		return
