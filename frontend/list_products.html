@@ -1,62 +1,73 @@
-<!-- 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Listing</title>
-    <link rel="stylesheet" href="list_products.css">
+    <style>
+        /* Custom CSS for product listing */
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .product-card {
+            display: flex;
+            flex-wrap: wrap;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+        
+        .product-card .card {
+            width: 20%;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .product-card .card img {
+            width: 100%;
+            height: auto;
+        }
+        
+        .product-card .card-body {
+            padding: 20px;
+        }
+        
+        .product-card .card-title {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .product-card .card-text {
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+        
+        .product-card .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+        
+        .product-card .btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
-    <h1>Product Listing</h1>
-    <ul id="product-list"></ul>
-
-    <script>
-        // Function to fetch and render products
-function fetchProducts() {
-    fetch('http://localhost:8080/list_products')
-        .then(response => response.json())
-        .then(products => {
-            const productList = document.getElementById('product-list');
-            productList.innerHTML = '';
-
-            products.forEach(product => {
-                const listItem = document.createElement('li');
-                listItem.classList.add('product-item');
-                const img = document.createElement('img');
-                img.classList.add('product-img');
-                img.src = '/uploads/' + product.image;
-                listItem.appendChild(img);
-                const details = document.createElement('span');
-                details.textContent = `${product.name} :- $${product.price}`;
-                listItem.appendChild(details);
-                productList.appendChild(listItem);
-            });
-        })
-        .catch(error => console.error('Error fetching products:', error));
-}
-
-// Fetch and render products when the page loads
-window.onload = fetchProducts;
-
-    </script>
-</body>
-</html>
--->
-
-<!-- /home/abinsms/Documents/New_Project_demo/Project_crud_mobile/uploads -->
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Listing</title>
-    <link rel="stylesheet" href="list_products.css">
-</head>
-<body>
-    <h1>Product Listing</h1>
-    <ul id="product-list"></ul>
+    <div class="container">
+        <h1 class="text-center">Product Listing</h1>
+        <div class="product-card" id="product-list"></div>
+    </div>
 
     <script>
         // Function to fetch and render products
@@ -68,25 +79,36 @@ window.onload = fetchProducts;
                     productList.innerHTML = '';
 
                     products.forEach(product => {
-                        const listItem = document.createElement('li');
-                        listItem.classList.add('product-item');
-                        const img = document.createElement('img');
-                        img.classList.add('product-img');
-                        img.src = '/uploads/' + product.image;
-                        listItem.appendChild(img);
-                        const details = document.createElement('span');
-                        details.textContent = `${product.name} :- $${product.price}`;
-                        listItem.appendChild(details);
-                        
-                        // Create "View Details" button
-                        const viewDetailsBtn = document.createElement('button');
-                        viewDetailsBtn.textContent = 'View Details';
-                        viewDetailsBtn.onclick = function() {
-                            window.location.href = `product_details.html?id=${product.id}`;
-                        };
-                        listItem.appendChild(viewDetailsBtn);
+                        const card = document.createElement('div');
+                        card.classList.add('card');
 
-                        productList.appendChild(listItem);
+                        const img = document.createElement('img');
+                        img.classList.add('card-img-top', 'product-img');
+                        img.src = '/uploads/' + product.image;
+                        img.alt = product.name;
+                        card.appendChild(img);
+
+                        const cardBody = document.createElement('div');
+                        cardBody.classList.add('card-body');
+
+                        const productName = document.createElement('h5');
+                        productName.classList.add('card-title');
+                        productName.textContent = product.name;
+                        cardBody.appendChild(productName);
+
+                        const productPrice = document.createElement('p');
+                        productPrice.classList.add('card-text');
+                        productPrice.textContent = `$${product.price}`;
+                        cardBody.appendChild(productPrice);
+
+                        const viewDetailsBtn = document.createElement('a');
+                        viewDetailsBtn.classList.add('btn');
+                        viewDetailsBtn.href = `product_details.html?id=${product.id}`;
+                        viewDetailsBtn.textContent = 'View Details';
+                        cardBody.appendChild(viewDetailsBtn);
+
+                        card.appendChild(cardBody);
+                        productList.appendChild(card);
                     });
                 })
                 .catch(error => console.error('Error fetching products:', error));

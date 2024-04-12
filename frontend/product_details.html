@@ -1,54 +1,9 @@
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Details</title>
-    <link rel="stylesheet" href="product_details.css">
-</head>
-<body>
-    <h1>Product Details</h1>
-    <div id="product-details"></div> -->
-
-    <!-- <script>
-        // Function to fetch and render product details
-        function fetchProductDetails() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const productId = urlParams.get('id');
-
-            fetch(`http://localhost:8080/api/products/{id}/${Id}`)
-                .then(response => response.json())
-                .then(product => {
-                    const productDetails = document.getElementById('product-details');
-                    productDetails.innerHTML = `
-                        <h2>${product.name}</h2>
-                        <p>Price: $${product.price}</p>
-                        <p>Specifications: ${product.specs}</p>
-                        <img src="/uploads/ + ${product.image}" class="product-img" alt="${product.name}">
-                       
-                        Add more details here as needed
-                    `;
-                    // img.classList.add('product-img');
-                    //     img.src = '/uploads/' + product.image;
-                    //     listItem.appendChild(img);
-                })
-                .catch(error => console.error('Error fetching product details:', error));
-        }
-
-        // Fetch and render product details when the page loads
-        window.onload = fetchProductDetails;
-    </script> -->
-<!-- </body>
-</html> -->
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Details</title>
-    <!-- <link rel="stylesheet" href="product_details.css"> -->
     <style>
         .product-img {
             max-width: 100%;
@@ -60,12 +15,8 @@
 <body>
     <h1>Product Details</h1>
     <div id="product-details"></div>
-<div class="button">
-   
-</div>
+
     <script>
-        
-      
         // Function to fetch and render product details
         function fetchProductDetails() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -74,64 +25,79 @@
             fetch(`http://localhost:8080/api/view_products/${productId}`)
                 .then(response => response.json())
                 .then(product => {
-                    console.log(product.image)
                     const productDetails = document.getElementById('product-details');
+                    productDetails.innerHTML = ''; // Clear previous content
+
                     const img = document.createElement('img');
                     img.classList.add('product-img');
                     img.src = '../uploads/' + product.image;
                     productDetails.appendChild(img);
 
-                    productDetails.innerHTML = `
-                        <h2>${product.name}</h2>
-                        <p>Price: $${product.price}</p>
-                        <p>Specifications: ${product.specs}</p>
-                        <p><img src ="${img.src}"></p>
-                        <button id="editButton">Edit</button>
-                        // <button id="deleteButton">Delet---87765e</button>
+                    const h2 = document.createElement('h2');
+                    h2.textContent = product.name;
+                    productDetails.appendChild(h2);
 
-                        <button onclick="deleteProduct(${product.ID})">Delete</button>
-        
-                        <!-- Add more details here as needed -->
-                       
-                    `;
-                    // document.getElementById('deleteButton').addEventListener('click', function() {
-                    //     // Trigger delete functionality
-                    //     deleteProduct(productId);
-                    // });
+                    const priceP = document.createElement('p');
+                    priceP.textContent = `Price: $${product.price}`;
+                    productDetails.appendChild(priceP);
+
+                    const specsP = document.createElement('p');
+                    specsP.textContent = `Specifications: ${product.specs}`;
+                    productDetails.appendChild(specsP);
+
+                    //create buttton delete,edit
+                    const deleteButton = document.createElement('button');
+                    deleteButton.textContent = 'Delete';
+                    deleteButton.addEventListener('click', function() {
+                        deleteProduct(product.id);
+                    });
+
+
+                    const editButton = document.createElement('button');
+                    editButton.textContent = 'Edit';
+                    editButton.onclick= function() {
+                        window.location.href = `edit_product.html?id=${product.id}`;
+                        };
+                   
+                    productDetails.appendChild(deleteButton);
+                    productDetails.appendChild(editButton);
                 })
                 .catch(error => console.error('Error fetching product details:', error));
+                }
+            
+        // Function to delete product
+        function deleteProduct(productId) {
+            fetch(`http://localhost:8080/api/delete_products/${productId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                //body: JSON.stringify({ id: productId })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to delete product');
+                }
+                console.log('Product deleted successfully');
+             window.location.href = "list_products.html"
+                // Refresh product details after deletion
+            })
+            .catch(error => console.error('Error deleting product:', error));
         }
 
-
-          
         // Fetch and render product details when the page loads
-        window.onload = fetchProductDetails;
- 
-        
-    
-           // function editProduct(productId) {
-            //     window.location.href = `edit_product.html?id=${productId}`;
-            // }
-
-        function deleteProduct(productId) {
-                if (confirm("Are you sure you want to delete this product?")) {
-                    fetch(`http://localhost:8080/delete_products/${productId} `,{
-                        method: "DELETE"
-                    })
-                        .then(response => {
-                            if (response.ok) {
-                                window.location.reload();
-                            } else {
-                                console.error("Error deleting product");
-                            }
-                        })
-                        .catch(error => {
-                            console.error("Error:", error);
-                        });
-                }
+        document.addEventListener("DOMContentLoaded", function() {
+            if (window.location.pathname.includes("product_details.html")) {
+                fetchProductDetails();
             }
+        });
+          // Function to redirect to update product page
+            function redirectToUpdatePage(productId) {
+            window.location.href = `edit_product.html?id=${productId}`;
+        }
 
-        
+         
+
     </script>
 </body>
 </html>

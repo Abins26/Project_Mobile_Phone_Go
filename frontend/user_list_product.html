@@ -1,0 +1,53 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Listing</title>
+    <link rel="stylesheet" href="list_products.css">
+</head>
+<body>
+    <h1>Product Listing</h1>
+    <ul id="product-list"></ul>
+
+    <script>
+        // Function to fetch and render products
+        function fetchProducts() {
+            fetch('http://localhost:8080/list_products')
+                .then(response => response.json())
+                .then(products => {
+                    const productList = document.getElementById('product-list');
+                    productList.innerHTML = '';
+
+                    products.forEach(product => {
+                        const listItem = document.createElement('li');
+                        listItem.classList.add('product-item');
+                        const img = document.createElement('img');
+                        img.classList.add('product-img');
+                        img.src = '/uploads/' + product.image;
+                        listItem.appendChild(img);
+                        const details = document.createElement('span');
+                        details.textContent = `${product.name} :- $${product.price}`;
+                        listItem.appendChild(details);
+                        
+                        // Create "View Details" button
+                        const viewDetailsBtn = document.createElement('button');
+                        viewDetailsBtn.textContent = 'View Details';
+                        viewDetailsBtn.onclick = function() {
+                            window.location.href = `user_product_details.html?id=${product.id}`;
+                        };
+                        listItem.appendChild(viewDetailsBtn);
+
+                        productList.appendChild(listItem);
+                    });
+                })
+                .catch(error => console.error('Error fetching products:', error));
+        }
+
+        // Fetch and render products when the page loads
+        window.onload = fetchProducts;
+    </script>
+</body>
+</html>

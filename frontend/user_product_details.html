@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details</title>
+    <style>
+        .product-img {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>User Product Details</h1>
+    <div id="user-product-details">
+
+
+    </div>
+<div class="button">
+   
+</div>
+    <script>
+        // Function to fetch and render product details
+        function fetchProductDetails() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const productId = urlParams.get('id');
+
+            fetch(`http://localhost:8080/api/view_products/${productId}`)
+                .then(response => response.json())
+                .then(product => {
+                    console.log(product.image)
+                    const productDetails = document.getElementById('user-product-details');
+                    const img = document.createElement('img');
+                    img.classList.add('product-img');
+                    img.src = '../uploads/' + product.image;
+                    productDetails.appendChild(img);
+
+                    productDetails.innerHTML = `
+                        <h2>${product.name}</h2>
+                        <p>Price: $${product.price}</p>
+                        <p>Specifications: ${product.specs}</p>
+                        <p><img src ="${img.src}"></p>
+
+                    `;
+                   
+                })
+                .catch(error => console.error('Error fetching product details:', error));
+        }
+        fetchProductDetails()
+        
+        </script>
+        </body>
+        </html>

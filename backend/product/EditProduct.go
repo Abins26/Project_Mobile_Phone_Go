@@ -1,7 +1,6 @@
 package product
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 	"mobiles/connect"
@@ -12,81 +11,68 @@ import (
 	"github.com/gorilla/mux"
 )
 
+
+
 func EditProduct(w http.ResponseWriter, r *http.Request) {
-	// Parse product ID from URL path
-	params := mux.Vars(r)
-	id, err := strconv.Atoi(params["id"])
+	vars := mux.Vars(r)
+	idStr := vars["id"]
+	id, err := strconv.Atoi(idStr)
+	fmt.Println("vars", err)
 	if err != nil {
-		http.Error(w, "Invalid product ID", http.StatusBadRequest)
+		http.Error(w, "Invalid mobile phone ID", http.StatusBadRequest)
 		return
 	}
 
-	// Parse form fields to get updated product data
-	err = r.ParseMultipartForm(10 << 20) // 10 MB max file size
+	name := r.FormValue("name")
+	specs := r.FormValue("specs")
+	priceStr := r.FormValue("price")
+	price, err := strconv.ParseFloat(priceStr, 64)
+	fmt.Println("price", err)
+
 	if err != nil {
-		http.Error(w, "Failed to parse form", http.StatusInternalServerError)
+		http.Error(w, "Invalid price format", http.StatusBadRequest)
 		return
 	}
 
-	// Retrieve the existing image filename from the database for the product being updated
-	var existingImageName string
-	db := connect.InitDB()
-	err = db.QueryRow("SELECT imagesName FROM products WHERE id=?", id).Scan(&existingImageName)
-	if err != nil {
-		http.Error(w, "Failed to retrieve existing image filename", http.StatusInternalServerError)
-		return
-	}
+	file, handler, err := r.FormFile("image")
+	fmt.Println("file", err)
 
-	// Delete the existing image file from the local directory
-	existingImagePath := "../uploads/" + existingImageName // Update the path to match your setup
-	err = os.Remove(existingImagePath)
 	if err != nil {
-		http.Error(w, "Failed to delete existing image file", http.StatusInternalServerError)
-		return
-	}
-
-	// Upload the new image file to the local directory
-	file, _, err := r.FormFile("image")
-	if err != nil {
-		http.Error(w, "Failed to receive image", http.StatusInternalServerError)
+		http.Error(w, "Failed to get image file", http.StatusBadRequest)
 		return
 	}
 	defer file.Close()
+	imagename := handler.Filename
+	imagePath := "../uploads/" + handler.Filename
+	outputFile, err := os.Create(imagePath)
+	fmt.Println("img path", err)
 
-	// // Generate a new filename for the uploaded image (you may use a unique identifier)
-	// newImageName := generateUniqueImageName()
-
-	
-	file, _, err = r.FormFile("image")
 	if err != nil {
-		http.Error(w, "Failed to receive image", http.StatusInternalServerError)
-		return
-	}
-	defer file.Close()
-	filename := r.MultipartForm.File["image"][0].Filename
-	fmt.Println(filename)
-
-	// Save the uploaded image file to the local directory
-	newImagePath := "../uploads/" + filename // Update the path to match your setup
-	outFile, err := os.Create(newImagePath)
-	if err != nil {
-		http.Error(w, "Failed to create new image file", http.StatusInternalServerError)
-		return
-	}
-	defer outFile.Close()
-	_, err = io.Copy(outFile, file)
-	if err != nil {
+		fmt.Println("error creating path", err)
 		http.Error(w, "Failed to save image file", http.StatusInternalServerError)
 		return
 	}
+	defer outputFile.Close()
 
-	// Update product details in the database
-	_, err = db.Exec("UPDATE products SET imagesName=? WHERE id=?", filename, id)
+	_, err = io.Copy(outputFile, file)
+	fmt.Println("vars", err)
+
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Failed to write image file", http.StatusInternalServerError)
 		return
 	}
 
-	// Return success response
-	json.NewEncoder(w).Encode(map[string]interface{}{"message": "Product updated successfully"})
+	// Set ID from URL parameter
+	db := connect.InitDB()
+
+	_, err = db.Exec("UPDATE products SET productname = ?, specs = ?, price = ?,imagesName = ? WHERE id = ?",
+		name, specs, price, imagename, id)
+	fmt.Println("vars", err)
+
+	if err != nil {
+		http.Error(w, "Failed to update mobile phone", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
 }

@@ -4,7 +4,59 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Edit Product</title>
-<link rel="stylesheet" href="edit_product.css">
+<!-- <link rel="stylesheet" href="edit_product.css"> -->
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f5f5f5;
+    }
+    
+    h1 {
+        text-align: center;
+    }
+    
+    #edit-product-form {
+        max-width: 600px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+    }
+    
+    #edit-product-form label {
+        margin-bottom: 10px;
+    }
+    
+    #edit-product-form input[type="text"],
+    #edit-product-form input[type="number"],
+    #edit-product-form textarea,
+    #edit-product-form button,
+    #edit-product-form input[type="file"] {
+        margin-bottom: 20px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        width: 100%;
+    }
+    
+    #edit-product-form button[type="submit"] {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+    
+    #edit-product-form button[type="submit"]:hover {
+        background-color: #0056b3;
+    }
+    
+</style>
 </head>
 <body>
 <h1>Edit Product</h1>
@@ -20,6 +72,59 @@
 <button type="submit">Update Product</button>
 </form>
  
-    <script src="edit_product.js"></script>
+    <script >
+        document.getElementById('edit-product-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission behavior
+        
+            // Extract product ID from url query 
+            const params = new URLSearchParams(window.location.search);
+            const productId = params.get('id');
+        
+            // Gather updated product information from form fields
+            const updatedProduct = {
+                name: document.getElementById('name').value,
+                specs: document.getElementById('specs').value,
+                price: parseFloat(document.getElementById('price').value),
+                // Retrieve selected image file
+                image: document.getElementById('image').files[0]
+            };
+        
+            // Create form data to send to server
+            const formData = new FormData();
+            formData.append('name', updatedProduct.name);
+            formData.append('specs', updatedProduct.specs);
+            formData.append('price', updatedProduct.price);
+            formData.append('image', updatedProduct.image);
+        
+            // Construct the URL for the PUT request
+            const url = `http://localhost:8080/api/products/edit/${productId}`;
+        
+            // Send PUT request to update the product
+            fetch(url, {
+                method: 'PUT',
+                body: formData // Include form data in the request body
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Product updated successfully...');
+                    window.location.href = 'admin_home.html'; // Redirect to admin dashboard after update
+                } else {
+                    throw new Error('Failed to update product');
+                }
+            })
+            .catch(error => {
+                console.error('Update product error:', error.name);
+                window.location.href = 'list_products.html'; 
+                // alert('Failed to update product ! Please try again.');
+            });
+        });
+        
+    </script>
 </body>
 </html>

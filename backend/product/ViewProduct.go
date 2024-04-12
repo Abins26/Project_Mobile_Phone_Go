@@ -17,7 +17,6 @@ func ViewProduct(w http.ResponseWriter, r *http.Request) {
 	// w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS") // Parse product ID from URL path
 
 	params := mux.Vars(r)
-	// fmt.Println(r)
 	productid, err := strconv.Atoi(params["id"])
 
 	// query := r.URL.Query()
@@ -32,7 +31,7 @@ func ViewProduct(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Retrieve product details from the database
-	db := connect.InitDB() // Assuming you have a function to initialize the database connection
+	db := connect.InitDB() 
 	var product Product
 	err = db.QueryRow("SELECT id, productname, price, specs ,imagesName FROM products WHERE id=?", productid).
 		Scan(&product.ID, &product.Name, &product.Price, &product.Specs, &product.Image)
