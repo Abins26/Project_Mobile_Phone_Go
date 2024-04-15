@@ -21,7 +21,7 @@
         max-width: 600px;
         margin: 20px auto;
         padding: 20px;
-        background-color: #fff;
+        background-color: hsl(0, 0%, 100%);
         border-radius: 8px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         display: flex;
@@ -35,25 +35,28 @@
     #edit-product-form input[type="text"],
     #edit-product-form input[type="number"],
     #edit-product-form textarea,
-    #edit-product-form button,
     #edit-product-form input[type="file"] {
         margin-bottom: 20px;
         padding: 10px;
         border: 1px solid #ccc;
         border-radius: 4px;
-        width: 100%;
+        /* width: 100%; */
     }
-    
+    /* #edit-product-form button, */
     #edit-product-form button[type="submit"] {
-        background-color: #007bff;
+        background-color: #6c5050;
         color: #fff;
         border: none;
         cursor: pointer;
         transition: background-color 0.3s ease;
+        /* size: 50%; */
+        width:max-content ;
+        height: 50px;
+
     }
     
     #edit-product-form button[type="submit"]:hover {
-        background-color: #0056b3;
+        background-color: #0078f9;
     }
     
 </style>
@@ -73,13 +76,31 @@
 </form>
  
     <script >
+
+  // Extract product ID from url query 
+    const params = new URLSearchParams(window.location.search);
+            const productId = params.get('id');
+            
+            // Fetch data from another API to populate the form fields
+            fetch(`http://localhost:8080/api/view_products/${productId}`)
+            .then(response => response.json())
+            .then(data => {
+                console.log(data)
+                document.getElementById('name').value = data.name;
+                document.getElementById('price').value = data.price;
+                document.getElementById('specs').value = data.specs;
+                // Assuming there's no API endpoint to fetch the image URL directly
+            })
+            .catch(error => {
+                console.error('Error fetching product details:', error);
+            });
+        
+            
         document.getElementById('edit-product-form').addEventListener('submit', function(event) {
             event.preventDefault(); // Prevent default form submission behavior
         
-            // Extract product ID from url query 
-            const params = new URLSearchParams(window.location.search);
-            const productId = params.get('id');
-        
+          
+
             // Gather updated product information from form fields
             const updatedProduct = {
                 name: document.getElementById('name').value,
