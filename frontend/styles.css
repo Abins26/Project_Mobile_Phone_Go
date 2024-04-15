@@ -23,7 +23,7 @@ input[type="text"],
 input[type="password"],
 button {
     display: block;
-    width: 100%;
+    width: 96%;
     margin: 10px 0;
     padding: 10px;
     border: 1px solid #ccc;
@@ -34,6 +34,8 @@ button {
     background-color: #32dada;
     color: white;
     cursor: pointer;
+    width: 100px;
+    align-content: center;
 }
 
 button:hover {
