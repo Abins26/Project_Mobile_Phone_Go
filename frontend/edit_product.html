@@ -49,7 +49,6 @@
         border: none;
         cursor: pointer;
         transition: background-color 0.3s ease;
-        /* size: 50%; */
         width:max-content ;
         height: 50px;
 
@@ -132,16 +131,12 @@
                 return response.json();
             })
             .then(response => {
-                if (response.ok) {
-                    alert('Product updated successfully...');
-                    window.location.href = 'admin_home.html'; // Redirect to admin dashboard after update
-                } else {
-                    throw new Error('Failed to update product');
-                }
+                    // window.alert('Product updated successfully...');
+                    window.location.href = 'list_products.html'; // Redirect to product list after update
+               
             })
             .catch(error => {
                 console.error('Update product error:', error.name);
-                window.location.href = 'list_products.html'; 
             });
         });
         

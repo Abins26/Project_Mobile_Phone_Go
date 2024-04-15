@@ -1,6 +1,7 @@
 package product
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -52,7 +53,7 @@ func EditProduct(w http.ResponseWriter, r *http.Request) {
 	}
 	oldimageName := path.Base(imgUrl)
 
-	oldimagePath := "./uploads/" + oldimageName
+	oldimagePath := "../uploads/" + oldimageName
 	err = os.Remove(oldimagePath)
 	if err != nil {
 		fmt.Println("failed to delete  error ", err)
@@ -90,4 +91,5 @@ func EditProduct(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]interface{}{"message": "Product updated successfully"})
 }

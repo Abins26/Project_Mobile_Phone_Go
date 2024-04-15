@@ -10,6 +10,11 @@
             height: auto;
             margin-bottom: 10px;
         }
+        button{
+        width: fit-content;  
+        background-color: cornflowerblue;  
+        }
+
     </style>
 </head>
 <body>
@@ -51,7 +56,7 @@
                     deleteButton.addEventListener('click', function() {
                         deleteProduct(product.id);
                     });
-
+                    const space = document.createTextNode(' '+' ');
 
                     const editButton = document.createElement('button');
                     editButton.textContent = 'Edit';
@@ -60,6 +65,8 @@
                         };
                    
                     productDetails.appendChild(deleteButton);
+                    productDetails.appendChild(space);
+
                     productDetails.appendChild(editButton);
                 })
                 .catch(error => console.error('Error fetching product details:', error));
